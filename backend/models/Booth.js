@@ -1,5 +1,23 @@
 const mongoose = require('mongoose');
 
+const partnerInviteSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    trim: true,
+    lowercase: true
+  },
+  inviteeId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  invitedAt: {
+    type: Date,
+    default: Date.now
+  }
+}, { _id: false });
+
 const boothSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -33,6 +51,15 @@ const boothSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
+  },
+  partnerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
+  partnerInvite: {
+    type: partnerInviteSchema,
+    default: null
   },
   status: {
     type: String,

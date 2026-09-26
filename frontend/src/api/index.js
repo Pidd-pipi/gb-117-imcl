@@ -34,7 +34,12 @@ export const boothAPI = {
   getById: (id) => api.get(`/booths/${id}`),
   getPending: () => api.get('/booths/pending'),
   getMyBooth: (expoId) => api.get(`/booths/my/${expoId}`),
+  getReceivedInvites: () => api.get('/booths/invites/received'),
   create: (data) => api.post('/booths', data),
+  update: (id, data) => api.put(`/booths/${id}`, data),
+  invitePartner: (id, email) => api.post(`/booths/${id}/invite`, { email }),
+  withdrawInvite: (id) => api.delete(`/booths/${id}/invite`),
+  acceptInvite: (id) => api.post(`/booths/${id}/invite/accept`),
   approve: (id, data) => api.put(`/booths/${id}/approve`, data),
   reject: (id) => api.put(`/booths/${id}/reject`),
 };

@@ -9,13 +9,15 @@ export default function ExpoDetail() {
   const { user } = useAuth()
   const [expo, setExpo] = useState(null)
   const [booths, setBooths] = useState([])
+  const [invites, setInvites] = useState([])
   const [loading, setLoading] = useState(true)
   const [newZone, setNewZone] = useState({ name: '', color: '#6366f1' })
 
   useEffect(() => {
     loadExpo()
     loadBooths()
-  }, [id])
+    loadInvites()
+  }, [id, user])
 
   const loadExpo = async () => {
     try {
@@ -34,6 +36,31 @@ export default function ExpoDetail() {
       setBooths(res.data)
     } catch (err) {
       console.error(err)
+    }
+  }
+
+  const loadInvites = async () => {
+    if (!user) {
+      setInvites([])
+      return
+    }
+    try {
+      const res = await boothAPI.getReceivedInvites()
+      setInvites(res.data.filter(inv => String(inv.expoId?._id || inv.expoId) === String(id)))
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const acceptInvite = async (boothId) => {
+    try {
+      const res = await boothAPI.acceptInvite(boothId)
+      alert(res.data.message || '已接受邀请')
+      loadInvites()
+      loadBooths()
+    } catch (err) {
+      alert(err.response?.data?.message || '操作失败')
+      loadInvites()
     }
   }
 
@@ -70,6 +97,30 @@ export default function ExpoDetail() {
           </div>
         </div>
       </div>
+
+      {invites.length > 0 && (
+        <div className="space-y-3 mb-8">
+          {invites.map(inv => (
+            <div key={inv._id} className="bg-purple-50 border border-purple-200 rounded-xl p-5 flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="font-semibold text-purple-800">🤝 合摊邀请</p>
+                <p className="text-gray-700 mt-1">
+                  <span className="font-medium">{inv.ownerId?.username}</span> 邀请你共同管理摊位「{inv.name}」
+                  <span className="block text-sm text-gray-400 mt-1">
+                    邀请时间：{new Date(inv.partnerInvite?.invitedAt).toLocaleString()} · 等待你确认
+                  </span>
+                </p>
+              </div>
+              <button
+                onClick={() => acceptInvite(inv._id)}
+                className="bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-purple-700"
+              >
+                接受邀请
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="flex gap-4 mb-8">
         <Link to={`/expo/${id}/map`} className="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700">
@@ -127,6 +178,10 @@ export default function ExpoDetail() {
                 <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                   <h4 className="font-bold text-gray-800">{booth.name}</h4>
                   <p className="text-sm text-gray-500 mt-1">{booth.description}</p>
+                  <p className="text-xs text-gray-400 mt-2">
+                    👤 {booth.ownerId?.username}
+                    {booth.partnerId && <span> 🤝 {booth.partnerId.username}</span>}
+                  </p>
                   {booth.zoneName && (
                     <span className="inline-block mt-2 text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
                       {booth.zoneName}

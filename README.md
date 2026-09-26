@@ -131,8 +131,14 @@ npm run dev
 ### 摊位
 - `GET /api/booths/expo/:expoId` - 获取展会的摊位
 - `GET /api/booths/pending` - 获取待审核摊位 (管理员)
+- `GET /api/booths/invites/received` - 我收到的合摊邀请
+- `GET /api/booths/my/:expoId` - 我在该展会的摊位（摊主或合摊伙伴）
 - `GET /api/booths/:id` - 获取摊位详情
 - `POST /api/booths` - 申请摊位
+- `PUT /api/booths/:id` - 更新摊位介绍/商品清单/位置偏好 (摊主或合摊伙伴)
+- `POST /api/booths/:id/invite` - 按邮箱邀请合摊伙伴 (摊主，摊位需已通过)
+- `DELETE /api/booths/:id/invite` - 撤回合摊邀请 (摊主)
+- `POST /api/booths/:id/invite/accept` - 接受合摊邀请 (被邀请人)
 - `PUT /api/booths/:id/approve` - 通过摊位申请
 - `PUT /api/booths/:id/reject` - 拒绝摊位申请
 

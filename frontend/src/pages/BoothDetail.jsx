@@ -104,6 +104,10 @@ export default function BoothDetail() {
           <div className="flex justify-between items-start">
             <div>
               <h1 className="text-3xl font-bold">{booth.name}</h1>
+              <p className="mt-2 text-white/90 text-sm">
+                👤 摊主：{booth.ownerId?.username}
+                {booth.partnerId && <span> 🤝 合摊伙伴：{booth.partnerId.username}</span>}
+              </p>
               {booth.zoneName && (
                 <span className="inline-block mt-2 bg-white/20 px-3 py-1 rounded text-sm">
                   {booth.zoneName}
