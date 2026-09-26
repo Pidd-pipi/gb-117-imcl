@@ -14,6 +14,8 @@
 - 申请入驻展会
 - 填写摊位名称、售卖内容、位置偏好
 - 查看申请状态
+- 已通过摊位按邮箱邀请注册用户拼摊，查看邀请进展、撤回邀请
+- 伙伴在展会页接受邀请后，双方共同维护摊位介绍、商品清单和位置偏好，页面显示双方昵称
 
 ### 👥 参观者功能
 - 浏览展会详情
@@ -131,10 +133,21 @@ npm run dev
 ### 摊位
 - `GET /api/booths/expo/:expoId` - 获取展会的摊位
 - `GET /api/booths/pending` - 获取待审核摊位 (管理员)
+- `GET /api/booths/invitations/mine` - 我收到的待处理合摊邀请 (可带 `?expoId=`)
+- `GET /api/booths/my/:expoId` - 我在该展会相关的摊位 (摊主或合摊伙伴)
 - `GET /api/booths/:id` - 获取摊位详情
 - `POST /api/booths` - 申请摊位
+- `PUT /api/booths/:id` - 维护摊位介绍/商品清单/位置偏好 (摊主或合摊伙伴)
 - `PUT /api/booths/:id/approve` - 通过摊位申请
 - `PUT /api/booths/:id/reject` - 拒绝摊位申请
+
+### 合摊 (仅已通过摊位)
+- `POST /api/booths/:id/invitations` - 摊主按邮箱邀请已注册伙伴
+- `GET /api/booths/:id/invitations` - 摊主查看邀请进展
+- `POST /api/booths/:id/invitations/cancel` - 摊主撤回邀请
+- `POST /api/booths/:id/invitations/accept` - 伙伴接受邀请
+- `POST /api/booths/:id/invitations/decline` - 伙伴拒绝邀请
+
 
 ### 活动时间表
 - `GET /api/schedules/expo/:expoId` - 获取展会活动

@@ -9,13 +9,17 @@ export default function ExpoDetail() {
   const { user } = useAuth()
   const [expo, setExpo] = useState(null)
   const [booths, setBooths] = useState([])
+  const [invitations, setInvitations] = useState([])
   const [loading, setLoading] = useState(true)
   const [newZone, setNewZone] = useState({ name: '', color: '#6366f1' })
 
   useEffect(() => {
     loadExpo()
     loadBooths()
-  }, [id])
+    if (user) {
+      loadMyInvitations()
+    }
+  }, [id, user])
 
   const loadExpo = async () => {
     try {
@@ -34,6 +38,37 @@ export default function ExpoDetail() {
       setBooths(res.data)
     } catch (err) {
       console.error(err)
+    }
+  }
+
+  const loadMyInvitations = async () => {
+    try {
+      const res = await boothAPI.getMyInvitations(id)
+      setInvitations(res.data || [])
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const handleAccept = async (boothId) => {
+    if (!window.confirm('接受该合摊邀请？接受后你将与摊主共同维护摊位。')) return
+    try {
+      await boothAPI.acceptInvitation(boothId)
+      alert('已接受邀请')
+      setInvitations(prev => prev.filter(inv => inv.boothId !== boothId))
+    } catch (err) {
+      alert(err.response?.data?.message || '接受失败')
+      loadMyInvitations()
+    }
+  }
+
+  const handleDecline = async (boothId) => {
+    try {
+      await boothAPI.declineInvitation(boothId)
+      setInvitations(prev => prev.filter(inv => inv.boothId !== boothId))
+    } catch (err) {
+      alert(err.response?.data?.message || '操作失败')
+      loadMyInvitations()
     }
   }
 
@@ -85,6 +120,41 @@ export default function ExpoDetail() {
         )}
       </div>
 
+      {user && invitations.length > 0 && (
+        <div className="bg-white rounded-xl shadow p-6 mb-8 border-2 border-pink-300">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">🤝 收到的合摊邀请</h3>
+          <div className="space-y-3">
+            {invitations.map(inv => (
+              <div key={inv._id} className="flex items-center justify-between bg-pink-50 rounded-lg px-4 py-3">
+                <div>
+                  <p className="text-gray-800">
+                    摊主 <span className="font-semibold">{inv.owner?.username}</span> 邀请你在
+                    「<span className="font-semibold">{inv.boothName}</span>」合摊
+                  </p>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    邀请邮箱：{inv.email} · {new Date(inv.createdAt).toLocaleString()}
+                  </p>
+                </div>
+                <div className="flex gap-2 ml-4 shrink-0">
+                  <button
+                    onClick={() => handleAccept(inv.boothId)}
+                    className="bg-green-500 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-green-600"
+                  >
+                    接受
+                  </button>
+                  <button
+                    onClick={() => handleDecline(inv.boothId)}
+                    className="bg-gray-200 text-gray-700 px-5 py-2 rounded-lg text-sm font-semibold hover:bg-gray-300"
+                  >
+                    拒绝
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {isOwner && (
         <div className="bg-white rounded-xl shadow p-6 mb-8">
           <h3 className="text-xl font-bold text-gray-800 mb-4">管理分区</h3>
@@ -127,6 +197,10 @@ export default function ExpoDetail() {
                 <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                   <h4 className="font-bold text-gray-800">{booth.name}</h4>
                   <p className="text-sm text-gray-500 mt-1">{booth.description}</p>
+                  <p className="text-xs text-gray-400 mt-2">
+                    摊主：{booth.ownerId?.username || '—'}
+                    {booth.partnerId?.username && ` ｜ 合摊伙伴：${booth.partnerId.username}`}
+                  </p>
                   {booth.zoneName && (
                     <span className="inline-block mt-2 text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
                       {booth.zoneName}

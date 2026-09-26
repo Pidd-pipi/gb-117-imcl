@@ -35,8 +35,17 @@ export const boothAPI = {
   getPending: () => api.get('/booths/pending'),
   getMyBooth: (expoId) => api.get(`/booths/my/${expoId}`),
   create: (data) => api.post('/booths', data),
+  update: (id, data) => api.put(`/booths/${id}`, data),
   approve: (id, data) => api.put(`/booths/${id}/approve`, data),
   reject: (id) => api.put(`/booths/${id}/reject`),
+  // 合摊
+  getMyInvitations: (expoId) =>
+    api.get('/booths/invitations/mine', { params: expoId ? { expoId } : {} }),
+  getInvitations: (boothId) => api.get(`/booths/${boothId}/invitations`),
+  invite: (boothId, email) => api.post(`/booths/${boothId}/invitations`, { email }),
+  cancelInvitation: (boothId) => api.post(`/booths/${boothId}/invitations/cancel`),
+  acceptInvitation: (boothId) => api.post(`/booths/${boothId}/invitations/accept`),
+  declineInvitation: (boothId) => api.post(`/booths/${boothId}/invitations/decline`),
 };
 
 export const scheduleAPI = {

@@ -125,6 +125,20 @@ export default function BoothDetail() {
 
         <div className="p-8">
           <section className="mb-8">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">摊位成员</h2>
+            <div className="flex flex-wrap gap-3">
+              <span className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg">
+                    摊主：{booth.ownerId?.username || '—'}
+                  </span>
+              {booth.partnerId?.username && (
+                <span className="px-4 py-2 bg-pink-100 text-pink-700 rounded-lg">
+                  合摊伙伴：{booth.partnerId.username}
+                </span>
+              )}
+            </div>
+          </section>
+
+          <section className="mb-8">
             <h2 className="text-xl font-bold text-gray-800 mb-4">摊位介绍</h2>
             <p className="text-gray-600">{booth.description}</p>
           </section>
